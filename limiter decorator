@@ -1,0 +1,28 @@
+# Implement a decorator @limiter for decorating a class that allows limiting the number of instances that can be created by the decorated class. 
+# The decorator should accept three arguments in the following order:
+
+#  - limit: the maximum number of instances that the decorated class can create
+#  - unique: the name of the attribute of the decorated class instance whose value serves as its identifier. Two instances with the same identifier cannot exist. If an attempt is made to create an instance with an identifier that matches the identifier of a previously created instance, the previously created instance should be returned.
+#  - lookup: determines which object should be returned if the limit is exceeded and the unique attribute value has not been used before. If the value is set to 'FIRST', the first created instance should be returned. If the value is set to 'LAST', the most recently created instance should be returned."
+
+# Here is my code for @limiter decorator (I think it's a really good solution):
+
+def limiter(limit, unique, lookup):
+    def outer_wrapper(cls):
+        instances = {}
+        
+        def inner_wrapper(*args, **kwargs):
+            instance = cls(*args, **kwargs)
+            ID = getattr(instance, unique)
+
+            if ID and ID in instances:
+                return instances[ID]
+
+            if len(instances) >= limit:
+                return list(instances.values())[0] if lookup == "FIRST" else list(instances.values())[-1]
+            
+            instances[ID] = instance
+            return instance
+        
+        return inner_wrapper
+    return outer_wrapper
