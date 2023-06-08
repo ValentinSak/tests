@@ -1,0 +1,35 @@
+# Implement the @recviz decorator that fully visualizes the execution of the decorated function, including recursive calls. 
+# The decorator should display all recursive calls and their return values, with recursive calls executed in depth separated by four spaces.
+# Each invocation of the decorated function during visualization should include the -> symbol, the name of the decorated function, and the arguments passed during that call. 
+# The return value during visualization should include the <- symbol followed by the actual return value.
+# Note 1: The recursive call and its return value should be at the same indentation level.
+# Note 2: Remember that the decorator should not consume the return value of the decorated function, and it should be able to decorate functions with any number of positional and keyword arguments.
+
+Here is my code:
+
+import functools
+
+
+def recviz(func):
+    level = -1
+
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        nonlocal level
+        level += 1
+
+        string_pos = list(map(repr, args))
+        string_key = [f'{k}={repr(v)}' for k, v in kwargs.items()]
+
+        print('    ' * level + '->', f'{func.__name__}({", ".join(string_pos + string_key)})')
+        value = func(*args, **kwargs)
+        print('    ' * level + '<-', repr(value))
+
+        level -= 1
+        return value
+
+    return wrapper
+
+
+
+
