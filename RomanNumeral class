@@ -1,0 +1,68 @@
+# Implement the RomanNumeral class, which describes a number in the Roman numeral system. When creating an instance of the class, it should accept one argument:
+  # -n number: a number in the Roman numeral system, for example, "IV".
+# An instance of the RomanNumeral class should have the following informal string representation:
+  # - The Roman numeral representation of the number.
+# In addition to that, an instance of the RomanNumeral class should support conversion to the int type. When converted to int, it should return the corresponding integer value.
+# Furthermore, instances of the RomanNumeral class should support all comparison operations between them using the ==, !=, >, <, >=, <= operators.
+# Finally, instances of the RomanNumeral class should support addition and subtraction operations between them using the + and - operators, respectively:
+  # - The result of addition should be a new instance of the RomanNumeral class representing the sum of the operands.
+  # - The result of subtraction should be a new instance of the RomanNumeral class representing the difference between the operands.
+# Note 1: It is guaranteed that a smaller Roman numeral will always be subtracted from a larger Roman numeral.
+# Note 3: When implementing arithmetic or comparison operations, remember to return the NotImplemented constant if the operation is not defined for the objects of the respective types.
+# Note 4: Additional data validation is not required in the methods. It is guaranteed that the implemented class will only be used with valid data.
+
+# Here is my code:
+
+from functools import total_ordering
+
+def arabic_to_roman(n):
+    result = ''
+    for arabic, roman in zip((1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1),
+                             'M     CM   D    CD   C    XC  L   XL  X   IX V  IV I'.split()):
+        result += n // arabic * roman
+        n %= arabic
+    return result
+
+def roman_to_arabic(roman):
+    integers = dict(I=1, V=5, X=10, L=50, C=100, D=500, M=1000)
+    result = 0
+    for i, c in enumerate(roman):
+        if i + 1 < len(roman) and integers[roman[i]] < integers[roman[i + 1]]:
+            result -= integers[roman[i]]
+        else:
+            result += integers[roman[i]]
+    return str(result)
+
+@total_ordering
+class RomanNumeral:
+    def __init__(self, number):
+        self.roman = number
+        self._arabic = roman_to_arabic(self.roman)
+
+    def __str__(self):
+        return self.roman
+
+    def __int__(self):
+        return int(self._arabic)
+
+    def __eq__(self, other):
+        if isinstance(other, RomanNumeral):
+            return int(self._arabic) == int(other._arabic)
+        return NotImplemented
+
+    def __lt__(self, other):
+        if isinstance(other, RomanNumeral):
+            return int(self._arabic) < int(other._arabic)
+
+    def __add__(self, other):
+        if isinstance(other, RomanNumeral):
+            return RomanNumeral(arabic_to_roman((int(self._arabic) + int(other._arabic))))
+        return NotImplemented
+
+    def __sub__(self, other):
+        if isinstance(other, RomanNumeral):
+            return RomanNumeral(arabic_to_roman((int(self._arabic) - int(other._arabic))))
+        return NotImplemented
+
+
+
