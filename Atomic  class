@@ -1,0 +1,37 @@
+# Implement the Atomic class. When creating an instance of the class, it should accept two arguments in the following order:
+  # - data: an arbitrary list, set, or dictionary.
+  # - deep: a boolean value that defaults to False.
+# An instance of the Atomic class should be a context manager that allows performing operations on the data collection atomically inside a with block. 
+# Atomic here means that either all operations should be executed, or none of them. 
+# If all operations are correct (do not raise an exception), they should be applied to the data collection. 
+# If any operation is incorrect, all previously executed operations should be rolled back, and the data collection should be returned to its original state.
+# The deep parameter should determine the state of nested structures within the data collection after the with block. 
+# If it is set to False, the context manager should only restore the data collection to its original state without affecting its nested structures. 
+# For example, if the data is a two-dimensional list and a nested list is modified inside the with block, that nested list should retain its new state 
+# even if subsequent operations inside the with block raise an exception and revert the data collection to its original state. 
+# However, if the deep parameter is True, the context manager should restore not only the data collection but also its nested structures to their original state.
+# Note 2: Additional data validation is not required in the methods. It is guaranteed that the implemented class will only be used with valid data.
+# Note 3: The Atomic class should adhere to the context manager protocol, i.e., it should have the __enter__() and __exit__() methods. 
+
+
+Here is my code (I think it's a good one):
+
+from copy import copy, deepcopy
+
+class Atomic:
+    def __init__(self, data, deep=False):
+        self.data = data
+        self.deep = deep
+        self.copy = deepcopy(self.data) if deep else copy(self.data)
+
+    def __enter__(self):
+        return self.copy
+
+    def __exit__(self, exc_type, exc_val, traceback):
+        if exc_type is None:
+            self.data.clear()
+            if isinstance(self.data, list):
+                self.data.extend(self.copy)
+            else:
+                self.data.update(self.copy)
+        return True
