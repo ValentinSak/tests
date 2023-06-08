@@ -1,0 +1,37 @@
+# Implement the Peekable class. When creating an instance of the class, it should accept one argument:
+  # - iterable: the iterable object.
+# An instance of the Peekable class should be an iterator that generates elements from the iterable object in their original order and then raises a StopIteration exception.
+# The Peekable class should have one instance method:
+  # - peek(): a method that returns the next element of the iterator, similar to the next() function, but without advancing the iterator. If the iterator is empty, a StopIteration exception should be raised. The method should also accept an optional argument default, which is an object to be returned instead of raising a StopIteration exception if the iterator is empty.
+Note: Additional data validation is not required in the methods. It is guaranteed that the implemented class will only be used with valid data.
+Note: The Peekable class should adhere to the iterator protocol, i.e., it should have the methods iter() and next(). 
+
+Here is my code (it's definetly not a best decision):
+
+class Peekable:
+    def __init__(self, iterable):
+        self.iterable = list(iterable)
+        self.index = -1
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        self.index += 1
+        if self.index >= len(self.iterable):
+            raise StopIteration
+        return self.iterable[self.index]
+
+    def peek(self, default=''):
+        if default == '':
+            if self.index >= len(self.iterable) or len(self.iterable) == 0:
+                raise StopIteration
+            if self.index < 0:
+                return self.iterable[0]
+            return self.iterable[self.index + 1]
+        else:
+            if self.index >= len(self.iterable):
+                return default
+            if self.index < 0:
+                return self.iterable[0]
+            return self.iterable[self.index]
