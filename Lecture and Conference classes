@@ -1,0 +1,64 @@
+# Implement the Lecture class that describes a presentation. When creating an instance of the class, it should accept three arguments in the following order:
+# - topic: the topic of the presentation
+# - start_time: the start time of the presentation as a string in the format HH:MM
+# - duration: the duration of the presentation as a string in the format HH:MM
+# Implement the Conference class that describes a conference taking place in a single day. 
+# The conference consists of a sequence of consecutive presentations. When creating an instance of the class, it should not accept any arguments.
+# The Conference class should have four instance methods:
+# - add(): a method that takes a presentation as an argument and adds it to the conference. 
+# If the presentation overlaps with other presentations in terms of time, a ValueError exception should be raised with the following message:
+  "It is not possible to schedule the presentation at this time"
+# total(): a method that returns the total duration of all presentations in the conference as a string in the format HH:MM.
+# longest_lecture(): a method that returns the duration of the longest presentation in the conference as a string in the format HH:MM.
+# longest_break(): a method that returns the duration of the longest break between presentations in the conference as a string in the format HH:MM.
+# Note: The break between presentations can be zero. In other words, one presentation can end, for example, at 12:00, and another one can start at 12:00.
+# Note: Additional data validation is not required. It is guaranteed that the implemented classes will only be used with valid data.
+
+#Here is my code (I know it's not the best decision, but I think it's actually good enough):
+
+from datetime import datetime, timedelta
+
+class Lecture:
+    def __init__(self, topic, start_time, duration):
+        self.pattern = '%H:%M'
+        self.topic = topic
+        self.start_time = datetime.strptime(start_time, self.pattern)
+        self.duration = timedelta(hours=int(duration.split(':')[0]), minutes=int(duration.split(':')[1]))
+        self.end = self.start_time + self.duration
+
+class Conference:
+    def __init__(self):
+        self.time_table = []
+
+    def add(self, lecture):
+        for lec in self.time_table:
+            if (lec.start_time <= lecture.start_time < lec.start_time + lec.duration) or \
+                    (lecture.start_time <= lec.start_time < lecture.start_time + lecture.duration):
+                raise ValueError('It is not possible to schedule the presentation at this time')
+        self.time_table.append(lecture)
+
+    def total(self):
+        count = sum([i.duration for i in self.time_table], timedelta())
+        hours = count.seconds // 3600
+        minutes = (count.seconds // 60) % 60
+        return "{:02d}:{:02d}".format(hours, minutes)
+
+
+    def longest_lecture(self):
+        res = max([i.duration for i in self.time_table])
+        hours = res.seconds // 3600
+        minutes = (res.seconds // 60) % 60
+        return "{:02d}:{:02d}".format(hours, minutes)
+
+    def longest_break(self):
+        self.time_table.sort(key= lambda x: x.start_time)
+        temp = []
+        for i in range(len(self.time_table)):
+            if i == len(self.time_table) - 1:
+                break
+            else:
+                temp.append(abs(self.time_table[i].end - self.time_table[i + 1].start_time))
+        res = max(temp)
+        hours = res.seconds // 3600
+        minutes = (res.seconds // 60) % 60
+        return "{:02d}:{:02d}".format(hours, minutes)
