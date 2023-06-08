@@ -1,0 +1,33 @@
+# Implement the HtmlTag class. When creating an instance, the class should accept two arguments in the following order:
+  # - tag: the HTML tag.
+  # - inline: a boolean value, defaulting to False.
+# An instance of the HtmlTag class should be a reentrant context manager that allows generating HTML code with proper indentation and tag nesting depth. 
+# The inline parameter should determine the position of the tags and their content. 
+# If it is True, the tags and content should be on the same line, if False, they should be on separate lines.
+# The HtmlTag class should have one instance method:
+  # - print(): a method that takes the content of the tag as an argument and prints it within that tag.
+# Note: Use two spaces as the indentation for each level.
+# Note: Additional data validation is not required in the methods. It is guaranteed that the implemented class will only be used with valid data.
+# Note: The HtmlTag class should comply with the context manager protocol, meaning it should have the enter() and exit() methods. 
+
+Here is my code (I think it's a good one):
+
+
+class HtmlTag:
+    __level = 0
+    def __init__(self, tag, inline=False):
+        self.tag = tag
+        self.inline = inline
+        self._end = "\n" * (not self.inline)
+
+    def __enter__(self):
+        print("  " * HtmlTag.__level + f"<{self.tag}>", end=self._end)
+        HtmlTag.__level += 1
+        return self
+
+    def __exit__(self, *args, **kwargs):
+        HtmlTag.__level -= 1
+        print("  " * HtmlTag.__level  * (not self.inline) + f"</{self.tag}>")
+
+    def print(self, value):
+        print("  " * HtmlTag.__level * (not self.inline) + value, end=self._end)
