@@ -1,0 +1,46 @@
+# Implement the Versioned class, which describes a descriptor that provides access to both the current value of an attribute and all previous values if the attribute has ever been modified. 
+# When creating an instance, the class should not accept any arguments.
+# The descriptor should be attached to an attribute with the same name as the variable to which the descriptor is assigned.
+# When accessing the attribute, the descriptor should return the value of that attribute if it is set. 
+# If the attribute value is not set, an AttributeError should be raised with the message:
+  - 'Attribute not found'
+#When setting or changing the attribute value, the descriptor should set or change the value without any additional checks.
+
+# The Versioned class should have two instance methods:
+
+# - get_version(): a method that takes two arguments: an instance of the class in which the descriptor is defined and an integer n. 
+  #The method should return the nth value of the attribute for that instance of the class. 
+  #For example, if the attribute value has been set and then changed, the get_version() method should be able to return both the initial value (first value)
+  # and the changed value (second value).
+# - set_version(): a method that takes two arguments: an instance of the class in which the descriptor is defined and an integer n. 
+  # The method should set the nth value of the attribute as the current value.
+# Note: Calling the set_version() method should not be considered as changing the attribute value. 
+# We will consider that an attribute changes its value only if this operation is performed through dot notation or the setattr() function.
+# Note: Additional data validation is not required in the methods. It is guaranteed that the implemented class will only be used with valid data.
+
+Here is my code (it's not the best one):
+
+class Versioned:
+    def __set_name__(self, cls, attr):
+        self._attr = attr
+
+
+    def __get__(self, obj, cls):
+        if obj is None:
+            return self
+        if self._attr in obj.__dict__:
+            return obj.__dict__[self._attr]
+        else:
+            raise AttributeError('Атрибут не найден')
+
+    def __set__(self, obj, value):
+        if 'cache' not in obj.__dict__:
+            obj.__dict__['cache'] = []
+        obj.__dict__[self._attr] = value
+        obj.__dict__['cache'].append(obj.__dict__[self._attr])
+
+    def get_version(self, obj, n):
+        return obj.__dict__['cache'][n - 1]
+
+    def set_version(self, obj, n):
+        obj.__dict__[self._attr] = obj.__dict__['cache'][n - 1]
