@@ -1,0 +1,48 @@
+# Implement the WriteSpy class. When creating an instance of the class, it should accept three arguments in the following order:
+  # - file1: a file object.
+  # - file2: a file object.
+  # - to_close: a boolean value that defaults to False.
+# An instance of the WriteSpy class should be a context manager that performs a write operation on both file objects, file1 and file2, simultaneously. 
+# The to_close parameter should determine the state of the file objects file1 and file2 after the with block. 
+# If it is True, the context manager should close both file objects after the with block; if False, it should leave them open.
+# The WriteSpy class should have four instance methods:
+  # - write(): a method that takes text as an argument and writes it to both file objects. 
+  # If at least one of the file objects is closed or not writable, it should raise a ValueError with the message: "File is closed or not writable."
+  # - close(): a method that immediately closes both file objects.
+  # - writable(): a method that returns True if both file objects are writable or False otherwise.
+  # - closed(): a method that returns True if both file objects are closed or False otherwise.
+
+# Note: Additional data validation is not required in the methods. It is guaranteed that the implemented class will only be used with valid data.
+# Note: The WriteSpy class should adhere to the context manager protocol, i.e., it should have the __enter__() and __exit__() methods. 
+
+Here is my code:
+class WriteSpy:
+    def __init__(self, file1, file2, to_close=False):
+        self.file1 = file1
+        self.file2 = file2
+        self.to_close = to_close
+
+    def write(self, text):
+        if not self.writable():
+            raise ValueError('File is closed or not writable')
+        self.file1.write(text)
+        self.file2.write(text)
+
+    def closed(self):
+        return self.file1.closed and self.file2.closed
+
+    def writable(self):
+        if self.file1.closed or self.file2.closed:
+            return False
+        return self.file1.writable() and self.file2.writable()
+
+    def close(self):
+        self.file1.close()
+        self.file2.close()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if self.to_close:
+            self.close()
