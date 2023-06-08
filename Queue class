@@ -1,0 +1,59 @@
+# Implement the Queue class, which describes a queue data structure with the "first in, first out" access discipline. 
+# When creating an instance of the class, it should accept an arbitrary number of positional arguments, each of which is an element of the queue. 
+# The order of the arguments determines the order of the elements in the queue, i.e., the first argument is the first element of the queue, the second argument is the second element, and so on.
+
+# The Queue class should have two instance methods:
+  # - add(): This method should accept an arbitrary number of positional arguments and add them to the end of the queue in the order they were passed.
+  # - pop(): This method should remove the first element from the queue and return it. If the queue is empty, the method should return None.
+# An instance of the Queue class should have the following informal string representation:
+  # - The first element of the queue -> The second element of the queue -> The third element of the queue -> ...
+# In addition to that, instances of the Queue class should support comparison operations using the == and != operators. 
+# Two queues are considered equal if they have the same length and contain equal elements at corresponding positions.
+# Furthermore, instances of the Queue class should support addition operations using the + and += operators:
+  # - The result of addition using the + operator should be a new instance of the Queue class representing a queue with all the elements from both original queues: first all the elements from the left queue, then all the elements from the right queue.
+  # - The result of addition using the += operator should be the left instance of the Queue class, representing a queue to which all the elements from the right queue have been added.
+#Finally, an instance of the Queue class should support the right bitwise shift operation by an integer n using the >> operator. 
+# The result should be a new instance of the Queue class representing the original queue without the first n elements. 
+# If n is greater than or equal to the length of the original queue, the result should be an instance of the Queue class representing an empty queue.
+# Note 1: If the object used in a comparison or arithmetic operation is invalid, the method implementing that operation should return the NotImplemented constant.
+# Note 2: Additional data validation is not required in the methods. It is guaranteed that the implemented class will only be used with valid data.
+
+Here is my code (it's a good one, I think):
+
+class Queue:
+    def __init__(self, *args):
+        self.queue = [*args]
+
+    def add(self, *args):
+        self.queue.extend(args)
+
+    def pop(self):
+        return self.queue.pop(0) if self.queue else None
+
+    def __str__(self):
+        return ' -> '.join(map(str, self.queue))
+
+    def __eq__(self, other):
+        if isinstance(other, Queue):
+            return self.queue == other.queue
+        return NotImplemented
+
+    def __add__(self, other):
+        if isinstance(other, Queue):
+            return Queue(*(self.queue + other.queue))
+        return NotImplemented
+
+    def __iadd__(self, other):
+        if isinstance(other, Queue):
+            self.add(*other.queue)
+            return self
+        return NotImplemented
+
+    def __rshift__(self, n):
+        if isinstance(n, int):
+            return Queue(*self.queue[n:])
+        return NotImplemented
+
+
+
+
