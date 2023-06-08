@@ -1,0 +1,34 @@
+# Implement the FieldTracker class, whose subclasses have the ability to track the state of specific attributes of their class instances. 
+# The child classes should inherit four instance methods:
+
+# - base(): a method that takes the name of an attribute as an argument and returns either its current value or its initial value (specified during definition) if it has been modified.
+# - has_changed(): a method that takes the name of an attribute as an argument and returns True if the value of that attribute has been changed at least once, or False otherwise.
+# - changed(): a method that returns a dictionary where the keys are the names of attributes that have changed their values, and the values are their initial values.
+# - save(): a method that resets the tracking. After calling this method, it is assumed that all attributes have not changed their values, and their current values are considered the initial values.
+
+#It is guaranteed that the subclasses of the FieldTracker class:
+
+# - always have a class attribute called "fields" containing a tuple of attributes that need to be tracked.
+# - in their initializer, always call the initializer of the FieldTracker class after setting the initial values to the tracked attributes.
+# Note: We will consider that an attribute changes its value only if the new value is different from the current value.
+# Note: Additional data validation is not required in the methods. It is guaranteed that the implemented class will only be used with valid data.
+
+Here is my code (I think it's a good one):
+
+class FieldTracker:
+    fields = tuple()
+
+    def __init__(self):
+        self.cache = {k: self.__dict__[k] for k in self.fields}
+        
+    def base(self, name):
+        return self.cache[name]
+    
+    def has_changed(self, name):
+        return self.cache[name] != self.__dict__[name]
+    
+    def changed(self):
+        return {k: self.cache[k] for k in self.fields if self.has_changed(k)}
+    
+    def save(self):
+        self.cache = {k: self.__dict__[k] for k in self.fields}
