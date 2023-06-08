@@ -1,0 +1,27 @@
+# Implement a decorator @auto_repr for decorating a class. The decorator should accept two arguments in the following order:
+
+# args: a list of attribute names
+# kwargs: a list of attribute names
+# The decorator should provide a formal string representation for instances of the decorated class. 
+# The string representation should include the class name and the values of the instance's attributes and should have the following format:
+
+# <class name>(<attribute>, <attribute>, ...)
+
+# If an attribute is specified in the args list, only its value should be included in the string representation. 
+# If an attribute is specified in the kwargs list, both its name and value should be included in the string representation.
+# Note 1: The attributes in the formatted string should appear in the order in which they were assigned to the instance.
+# Note 2: It is guaranteed that all necessary attribute names are provided when applying the decorator. 
+# It is also guaranteed that an attribute name is specified either only in the args list or only in the kwargs list."
+
+# My code for auto_repr decorator (I think it's a good one):
+
+def auto_repr(args, kwargs):
+    def wrapper(cls):
+        def _repr(self):
+            attrs = tuple(repr(self.__dict__[a]) for a in args)
+            k_attrs = tuple(f"{a}='{(self.__dict__[a])}'" for a in kwargs)
+            all_attrs = attrs + k_attrs
+            return f'{cls.__name__}({", ".join(all_attrs)})'
+        cls.__repr__ = _repr
+        return cls
+    return wrapper
