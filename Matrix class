@@ -1,0 +1,82 @@
+# Implement the Matrix class, which describes a two-dimensional matrix. When creating an instance of the class, it should accept three arguments in the following order:
+  # - rows: the number of rows in the matrix
+  # - cols: the number of columns in the matrix
+  # - value: the initial value for the elements of the matrix, defaulting to 0
+# An instance of the Matrix class should have two attributes:
+  # - rows: the number of rows in the matrix
+  # - cols: the number of columns in the matrix
+# The Matrix class should have two instance methods:
+  # - get_value(): This method should accept the row and column as arguments and return the element of the matrix at the specified row and column.
+  # - set_value(): This method should accept the row, column, and value as arguments and set the value of the element at the specified row and column.
+# An instance of the Matrix class should have the following formal string representation:
+
+  # Matrix(<number of rows in the matrix>, <number of columns in the matrix>)
+
+# The informal string representation should be a string that lists all the elements of the matrix.
+# The elements of each row should be separated by a space, and the rows of the matrix should be separated by a newline character (\n). 
+# For example, for an object Matrix(2, 3), the informal string representation should be "0 0 0\n0 0 0", which would be displayed as follows:
+
+# 0 0 0
+# 0 0 0
+
+# Additionally, an instance of the Matrix class should support the unary operators +, -, and ~:
+
+  # - The result of the unary + operator should be a new instance of the Matrix class with the same number of rows and columns and the same elements as the original.
+  # - The result of the unary - operator should be a new instance of the Matrix class with the same number of rows and columns, but with elements that have the opposite sign.
+  # - The result of the unary ~ operator should be a new instance of the Matrix class representing the transposed matrix.
+# Finally, when an instance of the Matrix class is passed to the round() function, a new instance of the Matrix class should 
+# be returned with the same number of rows and columns, but with elements rounded using the round() function. During the round() function call, 
+# it should be possible to specify an optional second argument as an integer, which determines the number of decimal places to round to.
+# Note 1: The indexing of rows and columns in the matrix starts from zero.
+# Note 2: Additional data validation is not required in the methods. It is guaranteed that the implemented class will only be used with valid data.
+
+# Here is my code (it's not the best solution):
+
+class Matrix:
+    def __init__(self, rows, cols, value=0):
+        self.rows = rows
+        self.cols = cols
+        self.value = value
+        self.matrix = [[value]*self.cols for _ in range(self.rows)]
+
+    def get_value(self, row, col):
+        return self.matrix[row][col]
+
+    def set_value(self, row, col, value):
+        self.matrix[row][col] = value
+
+    def __repr__(self):
+        return f'Matrix({self.rows}, {self.cols})'
+
+    def __str__(self):
+        res = ''
+        for row in self.matrix:
+            row = ' '.join([str(i) for i in row])
+            res += row + '\n'
+        res = res.rstrip('\n')
+        return res
+
+    def __pos__(self):
+        return Matrix(self.rows, self.cols, self.value)
+
+    def __neg__(self):
+        temp = Matrix(self.rows, self.cols)
+        for i in range(self.rows):
+            for j in range(self.cols):
+                temp.set_value(i, j, -self.matrix[i][j])
+        return temp
+
+    def __invert__(self):
+        temp = Matrix(len(self.matrix[0]), len(self.matrix))
+        for i in range(len(self.matrix[0])):
+            for j in range(len(self.matrix)):
+                temp.set_value(i, j, self.matrix[j][i])
+        return temp
+
+    def __round__(self, n=None):
+        temp = Matrix(self.rows, self.cols)
+        for i in range(self.rows):
+            for j in range(self.cols):
+                temp.set_value(i, j, round(self.matrix[i][j], n))
+        return temp
+       
