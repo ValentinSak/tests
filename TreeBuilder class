@@ -1,0 +1,35 @@
+# Implement the TreeBuilder class. When creating an instance, the class should not accept any arguments.
+
+# An instance of the TreeBuilder class should be a reentrant context manager that allows step-by-step construction of a tree-like data structure.
+# The TreeBuilder class should have two instance methods:
+  # - add(): a method that takes an arbitrary object (leaf) as an argument and adds it to the current node of the tree.
+  # - structure(): a method that returns the structure of the tree as nested lists.
+# Adding nodes to the tree should be done using the with statement. A node is considered current within its with block. 
+# If no leaf has been added to a node, that node should not appear in the structure returned by the structure() method.
+# Note: The structure of the tree can be arbitrary, meaning a node can contain another node, which in turn can contain another node, and so on.
+# Note: It is guaranteed that the structure of the tree will not be printed inside the with blocks
+# meaning the structure of the tree will only be printed after it has been constructed.
+# Note: Additional data validation is not required in the methods. It is guaranteed that the implemented class will only be used with valid data.
+# Note: The TreeBuilder class should comply with the context manager protocol, meaning it should have the enter() and exit() methods. 
+
+Here is my code (I think it's a good one):
+
+class TreeBuilder:
+    def __init__(self):
+        self.tree = []
+        self.temp = [self.tree]
+
+    def add(self, leaf):
+        self.temp[-1].append(leaf)
+
+    def structure(self):
+        return self.tree
+
+    def __enter__(self):
+        self.temp.append([])
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if self.temp[-1]:
+            self.temp[-2].append(self.temp[-1])
+        self.temp.pop()
