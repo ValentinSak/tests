@@ -1,0 +1,49 @@
+# Implement the Grouper class, which describes an object that groups elements of some iterable object based on a key function. 
+# When creating an instance of the class, it should accept two arguments in the following order:
+  # - iterable: the iterable object.
+  # - key: the key function.
+# Elements are grouped together if the key function returns the same result when applied to them. 
+# For example, elem1 and elem2 are grouped together if key(elem1) == key(elem2). 
+# The value key(elem1) is referred to as the group key, and elem1 and elem2 are referred to as group elements for that key.
+
+# The Grouper class should have two instance methods:
+  # - add(): a method that takes an arbitrary object as an argument and adds it to the appropriate group of the Grouper instance.
+  # - group_for(): a method that takes an arbitrary object as an argument, determines the group to which this object belongs in the Grouper instance, and returns the key of that group.
+# When the Grouper instance is passed to the len() function, it should return the number of groups it contains.
+# In addition, the Grouper instance should be an iterable object, allowing iteration over its groups, for example, using a for loop. 
+# In this case, a group is represented as a tuple, where the first element is the group key and the second element is a list of group elements. 
+# When iterating, the groups can be in arbitrary order.
+# The Grouper instance should also support membership testing using the in operator, which checks for the presence of a group with the desired key in the Grouper instance.
+# Finally, the Grouper instance should allow retrieving the elements of a group by key. In this case, 
+# the group elements should be returned as a list, with the elements in the same order they were added.
+# Note 1: The Grouper instance should not depend on the iterable object it was created from. In other words, if the original iterable object changes, the Grouper instance should not change.
+# Note 2: The implementation of the Grouper class can be arbitrary; there are no specific requirements for the presence of certain attributes.
+# Note 3: Additional data validation is not required in the methods. It is guaranteed that the implemented class will only be used with valid data.
+
+# Here is my code (I think it's a good one):
+
+class Grouper:
+    def __init__(self, iterable, key):
+        self.iterable = list(iterable)
+        self.key = key
+        self.grouper = {}
+        for i in iterable:
+            self.grouper.setdefault(self.key(i), []).append(i)
+
+    def add(self, item):
+        self.grouper.setdefault(self.key(item), []).append(item)
+
+    def group_for(self, item):
+        return self.key(item)
+
+    def __len__(self):
+        return len(self.grouper.keys())
+
+    def __iter__(self):
+        yield from self.grouper.items()
+
+    def __getitem__(self, item):
+        return self.grouper[item]
+
+    def __contains__(self, item):
+        return item in self.grouper.keys()
