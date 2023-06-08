@@ -1,0 +1,33 @@
+# Implement a class called Selfie, instances of which remember their previous states and can restore themselves to those states. 
+# An object's state is defined as a specific set of attributes and their corresponding values. 
+# During its lifetime, an instance of the Selfie class can modify its state in various ways, such as adding new attributes or changing the values of existing ones.
+# To capture the current state of an instance of the Selfie class, the save_state() method should be used
+# The captured states of an instance of the Selfie class should be indexed: the first captured state should have an index of 0, the second one should have an index of 1, the third one should have an index of 2, and so on. 
+# By using these indices, it should be possible to return to the desired states
+# Note that when returning to one of the previous states using the recover_state() method, a new instance of the Selfie class should be returned with the required state. 
+# If an index is passed to the recover_state() method that the instance of the Selfie class does not have a state for, the current instance should be returned
+# Each instance of the Selfie class should know how many states it has captured.
+
+# Here is my code (I know now, that it's not the best solution):
+
+class Selfie:
+    def __init__(self):
+        self.cache = {}
+        self.states = 0
+
+    def save_state(self):
+        self.cache.setdefault(self.states, {}).update({k: v for k, v in self.__dict__.items() if k != 'states' and k != 'cache'})
+        self.states += 1
+
+    def recover_state(self, index):
+        if index in self.cache.keys():
+            new = Selfie()
+            new.__dict__.update(self.cache[index])
+            new.cache = self.cache
+            new.states += 1
+            return new
+        else:
+            return self
+
+    def n_states(self):
+        return self.states
