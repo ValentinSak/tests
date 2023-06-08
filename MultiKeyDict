@@ -1,0 +1,40 @@
+# The task was to create a class called MultiKeyDict, which is almost identical to the dict class in most aspects.
+# The distinctive feature of the MultiKeyDict class should be the alias() method, which allows assigning aliases to existing keys. 
+# Accessing the value using a created alias should not be different from accessing it using the original key. 
+# Therefore, from the moment an alias is created, the value will have two or more keys associated with it if there are multiple aliases.
+# Keys should take precedence over aliases. If a key and an alias have the same name, all operations should be performed on the key:
+# The value should remain accessible via the alias even if the original key is deleted 
+
+# My code for MultiKeyDict class (I know now, that it's not the best decision):
+
+from collections import UserDict
+
+class MultiKeyDict(UserDict):
+    def __init__(self, *args, **kwargs):
+        self.aliases = {}
+        self.connection = {}
+        super().__init__(*args, **kwargs)
+
+    def alias(self, key, new_key):
+        self.aliases[new_key] = self[key]
+        self.connection[key] = new_key
+        self.connection[new_key] = key
+
+    def __getitem__(self, item):
+        if item in self.data:
+            return self.data[item]
+        elif item in self.aliases:
+            return self.aliases[item]
+
+    def __setitem__(self, key, value):
+        if key in self.data:
+            self.data[key] = value
+            for alias_key, original_key in self.connection.items():
+                if original_key == key:
+                    self.aliases[alias_key] = value
+        elif key in self.aliases:
+            original_key = self.connection[key]
+            self.data[original_key] = value
+            self.aliases[key] = value
+        else:
+            self.data[key] = value
